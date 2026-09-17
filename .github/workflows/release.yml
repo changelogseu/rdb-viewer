@@ -1,0 +1,75 @@
+name: Release
+
+# Builds Windows and macOS binaries and attaches them to a GitHub Release
+# whenever a version tag (e.g. v0.1.0) is pushed.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows artifact
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - run: flutter build windows --release
+      - name: Zip release folder
+        run: |
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath RDBViewer-windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-zip
+          path: RDBViewer-windows-x64.zip
+
+  build-macos:
+    name: Build macOS artifact
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter config --enable-macos-desktop
+      - run: flutter pub get
+      - run: flutter build macos --release
+      - name: Zip .app bundle
+        run: |
+          cd build/macos/Build/Products/Release
+          ditto -c -k --sequesterRsrc --keepParent "RDB Viewer.app" "$GITHUB_WORKSPACE/RDBViewer-macos.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-zip
+          path: RDBViewer-macos.zip
+
+  release:
+    name: Publish GitHub Release
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/windows-zip/RDBViewer-windows-x64.zip
+            artifacts/macos-zip/RDBViewer-macos.zip
+          generate_release_notes: true
+          body: |
+            > **macOS:** this build isn't code-signed or notarized. If
+            > Gatekeeper blocks it, either allow it via
+            > *System Settings → Privacy & Security → "Open Anyway"*, or run
+            > `xattr -dr com.apple.quarantine "RDB Viewer.app"` in Terminal
+            > after unzipping.

@@ -1,0 +1,60 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open file X
+        2. Click on key Y
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: info-tab
+    attributes:
+      label: Info tab contents (if the issue is about opening/reading a file)
+      description: >
+        Please paste what the app's "Info" tab shows for this file: RDB
+        version, checksum status, and - if present - the "nicht
+        unterstützte Schlüssel" table (type name + file offset).
+    validations:
+      required: false
+  - type: input
+    id: os
+    attributes:
+      label: OS and version
+      placeholder: e.g. Windows 11 24H2, macOS 15.1 (Apple Silicon)
+    validations:
+      required: true
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+      description: Shown in the app, or the release/tag you downloaded.
+    validations:
+      required: true
+  - type: input
+    id: redis-version
+    attributes:
+      label: Redis version that wrote the .rdb file (if known/applicable)
+    validations:
+      required: false
+  - type: checkboxes
+    id: file-offer
+    attributes:
+      label: Sample file
+      options:
+        - label: >
+            I can attach or link a minimal .rdb file that reproduces this
+            (please make sure it doesn't contain data you don't want to
+            share publicly)
