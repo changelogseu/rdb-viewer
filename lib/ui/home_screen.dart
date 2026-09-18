@@ -11,6 +11,7 @@ import 'widgets/app_card.dart';
 import 'widgets/info_panel.dart';
 import 'widgets/key_list_panel.dart';
 import 'widgets/top_nav_bar.dart';
+import 'widgets/update_dialog.dart';
 import 'widgets/value_detail_panel.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -39,6 +40,11 @@ class HomeScreen extends StatelessWidget {
                     ]
                   : null,
               actions: [
+                NavIconButton(
+                  icon: Icons.system_update_alt,
+                  tooltip: 'Nach Updates suchen',
+                  onPressed: () => checkForUpdateAndShowResult(context),
+                ),
                 if (appState.hasDocument)
                   PopupMenuButton<_DocAction>(
                     tooltip: 'Gesamte Datei exportieren',

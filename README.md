@@ -20,7 +20,10 @@ inspecting one meant spinning up a Redis instance, loading the file, and
 poking around with `redis-cli` — or reaching for a Python script. RDB Viewer
 opens the file directly: browse every key, see its type and TTL, edit values
 in place, and export what you need — all as a small native desktop app, with
-no server, no telemetry, and no network access at all.
+no server, no account, and no telemetry. The only network request anywhere
+in the app is the optional, user-triggered "check for updates" button,
+which just asks GitHub's public Releases API whether a newer version
+exists.
 
 > **UI language:** the app's interface is currently German-only (this repo's
 > primary audience so far). Contributions to add English/i18n are very
@@ -46,7 +49,10 @@ no server, no telemetry, and no network access at all.
   dropping data.
 - **`file.rdb` as a launch argument** for "Open with" integration on
   Windows/macOS.
-- 100% local: no server, no account, no analytics, no network calls.
+- **Update check**: click the update icon in the top bar to check GitHub
+  for a newer release and get a direct download link - entirely manual,
+  never automatic or in the background.
+- Otherwise 100% local: no server, no account, no analytics, no telemetry.
 
 ## Installation
 
