@@ -49,7 +49,10 @@ class HomeScreen extends StatelessWidget {
                 if (appState.hasDocument)
                   PopupMenuButton<_DocAction>(
                     tooltip: 'Gesamte Datei exportieren',
-                    icon: const Icon(Icons.ios_share, size: 18),
+                    child: const NavSecondaryButtonChrome(
+                      icon: Icons.ios_share,
+                      label: 'Exportieren',
+                    ),
                     onSelected: (a) => _handleDocAction(context, appState, a),
                     itemBuilder: (context) => const [
                       PopupMenuItem(

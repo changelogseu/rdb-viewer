@@ -163,6 +163,51 @@ class NavIconButton extends StatelessWidget {
   }
 }
 
+/// A labeled outlined-pill *visual* (not an interactive button on its own)
+/// for a secondary nav-bar action whose trigger needs to be unmistakable -
+/// e.g. distinguishing "export this key" from "export the whole file",
+/// which would otherwise share the same bare icon. Meant to be used as a
+/// `PopupMenuButton.child`: deliberately not wrapped in its own
+/// `OutlinedButton`/`InkWell`, since a real Material button here would
+/// compete with `PopupMenuButton`'s own tap handling in the gesture arena
+/// and could swallow the tap before the menu opens.
+class NavSecondaryButtonChrome extends StatelessWidget {
+  const NavSecondaryButtonChrome({super.key, required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final border = Theme.of(context).dividerTheme.color ?? AppColors.border;
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+          border: Border.all(color: border),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: AppColors.textPrimary),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// The bold black pill CTA button, e.g. "RDB-Datei öffnen".
 class NavPrimaryButton extends StatelessWidget {
   const NavPrimaryButton({super.key, required this.icon, required this.label, required this.onPressed});

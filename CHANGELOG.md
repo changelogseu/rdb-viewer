@@ -5,6 +5,27 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-29
+
+### Added
+
+- **Save as .rdb**: export the current (possibly edited) document as a new,
+  loadable `.rdb` file, via "Als .rdb-Datei speichern..." in the export
+  menu. Always writes a *new* file - the original is never overwritten.
+  Only available when the source file was fully parsed (see below); values
+  are always written in their simple "raw" on-disk form.
+- **Update check**: a manual, user-triggered button in the top nav bar
+  checks GitHub Releases for a newer version and offers a direct download
+  link. Never runs automatically - the only network request anywhere in
+  the app.
+
+### Changed
+
+- Clarified that "Save as .rdb" is refused (with an explanatory dialog) if
+  the source file contains keys this parser couldn't decode (streams,
+  modules, legacy zipmap hashes, Redis 7.4+ hash-field-TTL) - re-exporting a
+  partially-read file would otherwise silently drop that data.
+
 ## [0.1.0] - 2026-09-17
 
 Initial public release.
@@ -35,5 +56,6 @@ Initial public release.
   7.4+ hash-field-TTL encodings are not decoded; the app reports them
   clearly instead of silently skipping or corrupting data.
 
-[Unreleased]: https://github.com/changelogseu/rdb-viewer/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/changelogseu/rdb-viewer/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/changelogseu/rdb-viewer/releases/tag/v0.2.0
 [0.1.0]: https://github.com/changelogseu/rdb-viewer/releases/tag/v0.1.0
