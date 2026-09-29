@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../app_state.dart';
 import '../export/command_export.dart';
 import '../export/json_export.dart';
+import '../rdb/rdb_writer.dart';
 import 'file_io.dart';
 import 'theme/app_theme.dart';
 import 'widgets/app_card.dart';
@@ -51,6 +52,10 @@ class HomeScreen extends StatelessWidget {
                     icon: const Icon(Icons.ios_share, size: 18),
                     onSelected: (a) => _handleDocAction(context, appState, a),
                     itemBuilder: (context) => const [
+                      PopupMenuItem(
+                        value: _DocAction.saveRdb,
+                        child: Text('Als .rdb-Datei speichern...'),
+                      ),
                       PopupMenuItem(
                         value: _DocAction.saveJson,
                         child: Text('Alles als JSON speichern...'),
@@ -130,6 +135,39 @@ class HomeScreen extends StatelessWidget {
       BuildContext context, AppState appState, _DocAction action) async {
     final doc = appState.document!;
     switch (action) {
+      case _DocAction.saveRdb:
+        if (!doc.isFullyParsed) {
+          await showDialog<void>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Speichern als .rdb nicht möglich'),
+              content: const Text(
+                'Diese Datei wurde nicht vollständig gelesen - der Info-Tab '
+                'zeigt Schlüssel mit einem nicht unterstützten Typ (z.B. '
+                'Streams, Module, Hash-Feld-TTL). Ein Export als .rdb würde '
+                'diese Daten unbemerkt verlieren.\n\n'
+                'Nutze stattdessen "Alles als JSON speichern" - das bewahrt '
+                'alles, was gelesen werden konnte, verlustfrei.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Verstanden'),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+        final bytes = writeRdbFile(doc);
+        final path = await saveBinaryFile(
+          suggestedName: 'rdb_export.rdb',
+          bytes: bytes,
+        );
+        if (context.mounted && path != null) {
+          showSnack(context, 'Gespeichert unter $path');
+        }
+        break;
       case _DocAction.saveJson:
         final path = await saveTextFile(
           suggestedName: 'rdb_export.json',
@@ -176,7 +214,7 @@ class _TabLabel extends StatelessWidget {
   }
 }
 
-enum _DocAction { saveJson, saveCommands }
+enum _DocAction { saveRdb, saveJson, saveCommands }
 
 class _EmptyState extends StatelessWidget {
   const _EmptyState({required this.onOpen});

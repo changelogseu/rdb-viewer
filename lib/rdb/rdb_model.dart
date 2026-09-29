@@ -190,6 +190,14 @@ class RdbDocument {
 
   int get totalKeyCount =>
       databases.fold(0, (a, db) => a + db.entries.length) + unparsedKeys.length;
+
+  /// True if every key in the source file was successfully decoded - i.e.
+  /// the parser never had to stop early on an unsupported type or
+  /// module/stream data it can't structurally skip. Writing a new `.rdb`
+  /// file is only safe when this is true: otherwise the export would
+  /// silently omit whatever came after the stop point, which could look
+  /// like a successful "save" while actually discarding data.
+  bool get isFullyParsed => unparsedKeys.isEmpty && fatalStopReason == null;
 }
 
 enum ChecksumStatus { notChecked, disabled, valid, mismatch }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,24 @@ Future<String?> saveTextFile({
   if (location == null) return null;
   final file = File(location.path);
   await file.writeAsString(content);
+  return location.path;
+}
+
+/// Opens a native "save file" dialog and writes [bytes] verbatim to the
+/// chosen location. Returns the chosen path, or null if cancelled.
+Future<String?> saveBinaryFile({
+  required String suggestedName,
+  required Uint8List bytes,
+  List<String> acceptedExtensions = const ['rdb'],
+}) async {
+  final typeGroup = XTypeGroup(label: 'Export', extensions: acceptedExtensions);
+  final location = await getSaveLocation(
+    suggestedName: suggestedName,
+    acceptedTypeGroups: [typeGroup],
+  );
+  if (location == null) return null;
+  final file = File(location.path);
+  await file.writeAsBytes(bytes);
   return location.path;
 }
 
